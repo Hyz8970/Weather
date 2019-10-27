@@ -5,6 +5,7 @@ public class Region {
     private String name;
     private int level;
     private int parentId;
+    private String cid;
 
     public int getId() {
         return id;
@@ -36,5 +37,13 @@ public class Region {
 
     public void setParentId(int parentId) {
         this.parentId = parentId;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public void setCid(String cid) {
+        this.cid = cid;
     }
 }
