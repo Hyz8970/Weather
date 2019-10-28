@@ -14,9 +14,11 @@ public class NetTool {
     public NetTool(){
         config = new Properties();
         try{
-            InputStream inputStream = new BufferedInputStream(
-                    new FileInputStream(NetTool.class.getResource("").getPath() +
-                            "/../../../../config.properties"));
+            InputStream inputStream = null ;
+//            inputStream=new BufferedInputStream(
+//                    new FileInputStream(NetTool.class.getResource("").getPath() +
+//                            "/../../../../config.properties"));
+            inputStream=NetTool.class.getClassLoader().getResourceAsStream("./config.properties");
             config.load(inputStream);
             heWeatherKey = config.getProperty("heWeatherKey");
             aMapKey = config.getProperty("aMapKey");
