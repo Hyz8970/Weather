@@ -6,9 +6,9 @@ import java.awt.*;
 public class HJButton extends JButton {
     public HJButton(String tag){
         super(tag);
-//        setMargin(new Insets(0,0,0,0));
-//        setContentAreaFilled(false);
-//        setBorderPainted(false);
+        setMargin(new Insets(0,0,0,0));
+        setContentAreaFilled(false);
+        setBorderPainted(false);
 //        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 

@@ -3,11 +3,13 @@ package com.hyz.weather.view;
 import com.hyz.weather.action.IpLocation;
 import com.hyz.weather.action.Wallpaper;
 import com.hyz.weather.action.Weather;
-import com.hyz.weather.entity.root.HeWeather6Now;
 import com.hyz.weather.reSwing.HJButton;
+import com.hyz.weather.reSwing.Icons;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * 主窗体
@@ -16,12 +18,12 @@ public class MainWindow extends JFrame {
     private IpLocation ipLocation=new IpLocation();
     private Wallpaper wallpaper=new Wallpaper();
     private Weather weather=new Weather();
+    private int wWidth=1024,wHeight=576;
 
     public MainWindow() {
         //系统分辨率
         int screenWidth = java.awt.Toolkit.getDefaultToolkit().getScreenSize().width;
         int screenHeight = java.awt.Toolkit.getDefaultToolkit().getScreenSize().height;
-        int wWidth=1024,wHeight=576;
         this.setBounds(screenWidth/2 - wWidth/2, screenHeight/2 - wHeight/2, wWidth,wHeight);
         this.setUndecorated(true);//去掉窗口
         this.getRootPane().setWindowDecorationStyle(JRootPane.NONE);//指定窗口风格
@@ -29,25 +31,20 @@ public class MainWindow extends JFrame {
         this.setTitle("Weather");
         this.setResizable(false);
         this.setLayout(new GridBagLayout());//相对布局
-        ImageIcon imageIcon = new ImageIcon(MainWindow.class.getClassLoader().getResource("./img/logo.ico"));
-        this.setIconImage(imageIcon.getImage());
-        HJButton closeBt = new HJButton("X");
-        closeBt.setBounds(10,10,1000,570);
-        closeBt.addActionListener((e)-> System.exit(0));//关闭按钮
-        GridBagConstraints closeBtGBC=new GridBagConstraints();
-        closeBtGBC.gridx=1;
-        closeBtGBC.gridy=0;
-        closeBtGBC.gridwidth=GridBagConstraints.RELATIVE;
-        closeBtGBC.gridheight=1;
-        closeBtGBC.weightx=1;
-        closeBtGBC.weighty=0;
-        closeBtGBC.anchor=GridBagConstraints.CENTER;
-        closeBtGBC.fill=GridBagConstraints.HORIZONTAL;
-        closeBtGBC.insets=new  Insets( 5 , 5 , 5 , 5 );
-        closeBtGBC.ipadx=0;
-        closeBtGBC.ipady=0;
+        this.setIconImage(Icons.LOGO.getImage());
 
-        JPanel bg=new BGJPanel(this);//图片背景
+        //关闭按钮
+        JButton closeBt = new JButton(Icons.CLOSE);
+        closeBt.setMargin(new Insets(0,0,0,0));
+        closeBt.setContentAreaFilled(false);
+        closeBt.setBorderPainted(false);
+        closeBt.setBounds(wWidth-30,6,24,24);
+        closeBt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeBt.addActionListener((e)-> System.exit(0));
+        closeBt.setRolloverIcon(Icons.CLOSE_FOCUS);
+        getLayeredPane().add(closeBt);
+
+        setBackgroundImg();
 
         NowPanel nowPanelP =new NowPanel();
         AirNowPanel airNowPanelP =new AirNowPanel();
@@ -67,15 +64,27 @@ public class MainWindow extends JFrame {
 //                lifestyleP.setData(weather.lifestyle(location));
 //            }
         }).start();
-
 //        this.add(nowJp);
 //        this.add(airNowJp);
 //        this.add(forecastJp);
 //        this.add(hourlyJp);
 //        this.add(lifestyleJp);
+    }
 
-        bg.add(closeBt,closeBtGBC);
-        this.add(bg,new GridBagConstraints());
+    private void setBackgroundImg(){
+        JLabel bg=new JLabel(Icons.BACKGROUND);
+        this.getLayeredPane().add(bg,JLayeredPane.DEFAULT_LAYER);
+        bg.setBounds(new Rectangle(0,0,wWidth,wHeight));
+        new Thread(()->{
+            //加载bing壁纸
+            String uri = wallpaper.bingWallpaper();
+            try {
+                bg.setIcon(new ImageIcon(new URL(uri)));
+                repaint();//刷新重绘
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     public static void main(String[] args) {
