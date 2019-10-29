@@ -15,7 +15,7 @@ public class HJButton extends JButton {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(MDColor.blueLight);
+        g.setColor(MDColor.BLUE_DARK);
 //        g.fillRect(20,50,100,100);
         g.drawRoundRect(0,0,70,30,10,10);
     }

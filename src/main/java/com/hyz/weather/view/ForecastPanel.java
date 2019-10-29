@@ -8,6 +8,10 @@ import javax.swing.*;
  * 七天天气面板
  * */
 public class ForecastPanel extends JPanel {
+    public ForecastPanel(){
+        super();
+        setName("forecast");
+    }
     public boolean setData(HeWeather6Forecast heWeather6Forecast){
         return false;
     }
