@@ -4,6 +4,7 @@ import com.hyz.weather.action.IpLocation;
 import com.hyz.weather.action.Wallpaper;
 import com.hyz.weather.action.Weather;
 import com.hyz.weather.entity.root.HeWeather6Now;
+import com.hyz.weather.reSwing.HJLabel;
 import com.hyz.weather.reSwing.Icons;
 
 import javax.swing.*;
@@ -20,8 +21,8 @@ public class MainWindow extends JFrame {
     private IpLocation ipLocation = new IpLocation();
     private Wallpaper wallpaper = new Wallpaper();
     private Weather weather = new Weather();
-    private int wWidth = 1024, wHeight = 576;
-    private String appTitle = "天气预报";
+    private int wWidth = 1024, wHeight = 576, tHeight = 36;
+    private String appTitle = "和风天气";
     private Point loc = null;
     private Point tmp = null;
     private boolean isDragged = false;
@@ -30,7 +31,7 @@ public class MainWindow extends JFrame {
     private ForecastPanel forecastPanelP;
     private HourlyPanel hourlyPanelP;
     private LifestylePanel lifestylePanelP;
-    private String location="";
+    private String location = "beihai";
 
     public MainWindow() {
         //系统分辨率
@@ -42,26 +43,27 @@ public class MainWindow extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setTitle(appTitle);
         this.setResizable(false);
-        this.setLayout(new BorderLayout());
         this.setIconImage(Icons.LOGO.getImage());
 
         //标题栏
-        JLabel wTitle = new JLabel(appTitle);
-        wTitle.setBounds(10, 0, wWidth-40, 30);
-        wTitle.setFont(new Font("微软雅黑",Font.PLAIN,24));
+        JLabel wIcon = new JLabel(new ImageIcon(
+                Icons.LOGO.getImage().getScaledInstance(30, 30, Image.SCALE_FAST)
+        ));
+        wIcon.setBounds(10, tHeight / 2 - 30 / 2, 30, 30);
+        HJLabel wTitle = new HJLabel(appTitle);
+        wTitle.setBounds(50, 0, wWidth - 40 - Icons.CLOSE.getIconWidth(), tHeight);
         wTitle.setForeground(Color.white);
-        getLayeredPane().add(wTitle);
+//        this.getLayeredPane().add(wIcon);
+//        this.getLayeredPane().add(wTitle);
         wTitle.addMouseListener(
                 new java.awt.event.MouseAdapter() {
                     public void mouseReleased(MouseEvent e) {
                         isDragged = false;
-                        getSelf().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
                     }
 
                     public void mousePressed(MouseEvent e) {
                         tmp = new Point(e.getX(), e.getY());
                         isDragged = true;
-                        getSelf().setCursor(new Cursor(Cursor.MOVE_CURSOR));
                     }
                 });
         wTitle.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -76,11 +78,11 @@ public class MainWindow extends JFrame {
 
         //关闭按钮
         JButton closeBt = new JButton(Icons.CLOSE);
-        closeBt.setMargin(new Insets(10, 10, 10, 10));
+        closeBt.setMargin(new Insets(0, 0, 0, 0));
         closeBt.setContentAreaFilled(false);
         closeBt.setBorderPainted(false);
-        closeBt.setBounds(wWidth - 30, 6, 24, 24);
-        closeBt.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        closeBt.setBounds(wWidth - Icons.CLOSE.getIconWidth(), 0,
+                Icons.CLOSE.getIconWidth(), Icons.CLOSE.getIconHeight());
         closeBt.addActionListener((e) -> System.exit(0));
         closeBt.addMouseListener(new MouseListener() {
             @Override
@@ -109,35 +111,52 @@ public class MainWindow extends JFrame {
                 closeBt.setContentAreaFilled(false);
             }
         });
-        getLayeredPane().add(closeBt);
-
-        setBackgroundImg();
+//        this.getLayeredPane().add(closeBt);
+//        setBackgroundImg();
+//        int cWidth = wWidth / 2 - 10;//组件宽度
+//        int osHeight = wHeight - tHeight;//单侧面板高度
         nowPanelP = new NowPanel();
         airNowPanelP = new AirNowPanel();
-        forecastPanelP = new ForecastPanel();
         hourlyPanelP = new HourlyPanel();
+        forecastPanelP = new ForecastPanel();
         lifestylePanelP = new LifestylePanel();
-//        flushData();
+        flushData();
+        this.getContentPane().setLayout(new BorderLayout());
+
+        GridBagConstraints leftGBC = new GridBagConstraints();
+        leftGBC.fill=GridBagConstraints.BOTH;
+        leftGBC.gridx=0;
         //左面板
-        JPanel leftPanel=new JPanel();
-        leftPanel.setLayout(new BorderLayout());
-        leftPanel.setBounds(0,30,wWidth/2,wHeight-30);
-        leftPanel.add(nowPanelP,BorderLayout.NORTH);
-        leftPanel.add(airNowPanelP,BorderLayout.CENTER);
-        leftPanel.add(hourlyPanelP,BorderLayout.SOUTH);
+        JPanel leftPanel = new JPanel();
+        leftPanel.setOpaque(false);
+        leftPanel.setLayout(new GridBagLayout());
+        leftGBC.gridheight=2;
+        leftPanel.add(nowPanelP, leftGBC);
+        leftGBC.gridheight=1;
+        leftPanel.add(airNowPanelP, leftGBC);
+        leftPanel.add(hourlyPanelP, leftGBC);
         //右面板
-        JPanel rightPanel=new JPanel();
-        rightPanel.setLayout(new BorderLayout());
-        rightPanel.setBounds(wWidth/2,30,wWidth/2,wHeight-30);
-        rightPanel.add(forecastPanelP,BorderLayout.NORTH);
-        rightPanel.add(lifestylePanelP,BorderLayout.SOUTH);
-        this.add(leftPanel,BorderLayout.WEST);
-        this.add(rightPanel,BorderLayout.EAST);
+        GridBagConstraints rightGBC = new GridBagConstraints();
+        rightGBC.fill=GridBagConstraints.EAST;
+        JPanel rightPanel = new JPanel();
+        rightPanel.setOpaque(false);
+        rightPanel.setLayout(new GridBagLayout());
+        rightGBC.gridheight=1;
+        rightPanel.add(forecastPanelP, rightGBC);
+        rightGBC.gridheight=4;
+        rightPanel.add(lifestylePanelP, rightGBC);
+
+        this.getContentPane().add(leftPanel, BorderLayout.WEST);
+        this.getContentPane().add(rightPanel, BorderLayout.EAST);
+        this.getLayeredPane().add(wIcon);
+        this.getLayeredPane().add(wTitle);
+        this.getLayeredPane().add(closeBt);
+        setBackgroundImg();
     }
 
     private void setBackgroundImg() {
         JLabel bg = new JLabel(new ImageIcon(
-                Icons.BACKGROUND.getImage().getScaledInstance(wWidth,wHeight,Image.SCALE_FAST)
+                Icons.BACKGROUND.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
         ));
         this.getLayeredPane().add(bg, JLayeredPane.DEFAULT_LAYER);
         bg.setBounds(new Rectangle(0, 0, wWidth, wHeight));
@@ -147,7 +166,7 @@ public class MainWindow extends JFrame {
             try {
                 ImageIcon bing = new ImageIcon(new URL(uri));
                 bg.setIcon(new ImageIcon(
-                        bing.getImage().getScaledInstance(wWidth,wHeight,Image.SCALE_FAST)
+                        bing.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
                 ));
                 repaint();//刷新重绘
             } catch (MalformedURLException e) {
@@ -155,19 +174,21 @@ public class MainWindow extends JFrame {
             }
         }).start();
     }
-    private JFrame getSelf(){
+
+    private JFrame getSelf() {
         return this;
     }
-    private void flushData(){
+
+    private void flushData() {
         new Thread(() -> {
-            if (location.equals("")){
+            if (location.equals("")) {
                 //定位获取天气数据
                 location = ipLocation.locationByIP();
             }
             HeWeather6Now now = weather.now(location);
-            if (now != null){
+            if (now != null) {
                 nowPanelP.setData(now);
-                location=now.getBasic().getCid();
+                location = now.getBasic().getCid();
                 airNowPanelP.setData(weather.airNow(location));
                 forecastPanelP.setData(weather.forecast(location));
                 hourlyPanelP.setData(weather.hourly(location));
@@ -175,6 +196,7 @@ public class MainWindow extends JFrame {
             }
         }).start();
     }
+
     public static void main(String[] args) {
         MainWindow mainWindow = new MainWindow();
         mainWindow.setVisible(true);

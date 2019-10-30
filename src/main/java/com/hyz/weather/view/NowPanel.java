@@ -2,6 +2,9 @@ package com.hyz.weather.view;
 
 import com.hyz.weather.entity.Now;
 import com.hyz.weather.entity.root.HeWeather6Now;
+import com.hyz.weather.reSwing.Fonts;
+import com.hyz.weather.reSwing.HJLabel;
+import com.hyz.weather.reSwing.MDColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,22 +13,24 @@ import java.awt.*;
  * 现在的天气面板
  * */
 public class NowPanel extends JPanel {
-    private JLabel tmp,icon,cond,windDir,windSpd;
+    private HJLabel tmp,icon,cond,windDir,windSpd;
 
     public NowPanel(){
         super();
-        tmp=new JLabel("10");
-        icon=new JLabel(new ImageIcon(
-                NowPanel.class.getClassLoader().getResource("./img/icon/icon_100d.png")));
-        cond=new JLabel("晴");
-        windDir=new JLabel("东风");
-        windSpd=new JLabel("11m/s");
-        tmp.setFont(new Font("微软雅黑",Font.BOLD,72));
+        tmp=new HJLabel();
+        icon=new HJLabel();
+        cond=new HJLabel();
+        windDir=new HJLabel();
+        windSpd=new HJLabel();
+        tmp.setFont(Fonts.MSYH_BOLD_72);
+        cond.setFont(Fonts.MSYH_PLAIN_32);
+        windDir.setFont(Fonts.MSYH_PLAIN_18);
+        windSpd.setFont(Fonts.MSYH_PLAIN_18);
         this.setLayout(new BorderLayout());
         JPanel topPanel=new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.add(tmp,BorderLayout.WEST);
-        topPanel.add(new JLabel("℃"),BorderLayout.CENTER);
+        topPanel.add(new HJLabel("℃"),BorderLayout.CENTER);
         topPanel.add(icon,BorderLayout.EAST);
         JPanel bottomPanel=new JPanel();
         bottomPanel.setLayout(new BorderLayout());
@@ -34,6 +39,7 @@ public class NowPanel extends JPanel {
         this.add(topPanel,BorderLayout.NORTH);
         this.add(cond,BorderLayout.CENTER);
         this.add(bottomPanel,BorderLayout.SOUTH);
+        this.setBorder(BorderFactory.createMatteBorder(0,0,2,0, MDColor.BLUE_DARK));
     }
     /**
      * 设置天气数据
@@ -48,6 +54,6 @@ public class NowPanel extends JPanel {
                 NowPanel.class.getClassLoader()
                         .getResource("./img/icon/icon_"+now.getCond_code()+"d.png"))
         );
-        return false;
+        return true;
     }
 }
