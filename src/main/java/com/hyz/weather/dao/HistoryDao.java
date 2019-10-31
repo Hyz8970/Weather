@@ -21,7 +21,7 @@ public class HistoryDao extends CommonDao {
             if (result != null) {
                 history.setId(result.getId());
                 //存在即更新
-                int update = sqlSession.update(getMapping() + "historyCurrent", history);
+                int update = sqlSession.update(getMapping() + "historyUpdate", history);
                 sqlSession.commit();
                 return update == 1;
             } else {

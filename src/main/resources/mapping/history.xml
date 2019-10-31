@@ -23,11 +23,11 @@
     <!--  修改  -->
     <update id="historyUpdate" parameterType="com.hyz.weather.entity.History">
         update history set
-            isUse=#{isUser}
-            now=#{now}
-            airNow=#{airNow}
-            hourly=#{hourly}
-            forecast=#{forecast}
+            isUse=#{isUse},
+            now=#{now},
+            airNow=#{airNow},
+            hourly=#{hourly},
+            forecast=#{forecast},
             lifestyle=#{lifestyle}
         where id = #{id}
     </update>

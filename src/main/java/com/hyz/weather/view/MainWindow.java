@@ -19,10 +19,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.SimpleFormatter;
 
 /**
  * 主窗体
@@ -277,11 +274,9 @@ public class MainWindow extends JFrame {
                 }.getType()));
             } catch (Exception e) {
                 //解析炸了
-                refreshData();
             }
-        } else {
-            refreshData();
         }
+        refreshData();
     }
 
     private void refreshData() {
