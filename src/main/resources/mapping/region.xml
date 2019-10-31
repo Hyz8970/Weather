@@ -7,6 +7,6 @@
     </select>
     <!--  修改Cid  -->
     <update id="updateCid" parameterType="com.hyz.weather.entity.Region">
-        update region as r set r.cid=#{cid} where r.id = #{id}
+        update region set cid=#{cid} where `name` like #{name}
     </update>
 </mapper>

@@ -23,6 +23,7 @@ public class RegionDao extends CommonDao{
     public boolean updateCid(Region region) {
         try (SqlSession session = getSessionFactory().openSession()) {
             int update = session.update(getMapping() + "updateCid", region);
+            session.commit();
             return update >= 1;
         }
     }

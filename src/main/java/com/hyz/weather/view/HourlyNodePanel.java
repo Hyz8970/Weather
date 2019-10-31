@@ -2,20 +2,21 @@ package com.hyz.weather.view;
 
 import com.hyz.weather.reSwing.Fonts;
 import com.hyz.weather.reSwing.HJLabel;
+import com.hyz.weather.reSwing.HJPanel;
 import com.hyz.weather.reSwing.MDColor;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class HourlyNodePanel extends JPanel {
+public class HourlyNodePanel extends HJPanel {
     private HJLabel time, tmp, cond;
 
     public HourlyNodePanel() {
         super();
-        time = new HJLabel();
-        tmp = new HJLabel();
-        cond = new HJLabel();
-        time.setFont(Fonts.MSYH_PLAIN_14);
+        time = new HJLabel("",JLabel.CENTER);
+        tmp = new HJLabel("",JLabel.CENTER);
+        cond = new HJLabel("",JLabel.CENTER);
+        time.setFont(Fonts.MSYH_PLAIN_10);
         tmp.setFont(Fonts.MSYH_PLAIN_14);
         cond.setFont(Fonts.MSYH_PLAIN_14);
         this.setLayout(new BorderLayout());

@@ -2,8 +2,8 @@ package com.hyz.weather.entity;
 
 public class History {
     private int id;
-    private int cid;
-    private int isUser;
+    private int isUse;
+    private String cid;
     private String name;
     private String now;
     private String airNow;
@@ -19,20 +19,20 @@ public class History {
         this.id = id;
     }
 
-    public int getCid() {
+    public String getCid() {
         return cid;
     }
 
-    public void setCid(int cid) {
+    public void setCid(String cid) {
         this.cid = cid;
     }
 
-    public int getIsUser() {
-        return isUser;
+    public int getIsUse() {
+        return isUse;
     }
 
-    public void setIsUser(int isUser) {
-        this.isUser = isUser;
+    public void setIsUse(int isUse) {
+        this.isUse = isUse;
     }
 
     public String getName() {

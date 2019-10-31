@@ -3,6 +3,7 @@ package com.hyz.weather.view;
 import com.hyz.weather.entity.Hourly;
 import com.hyz.weather.entity.root.HeWeather6Hourly;
 import com.hyz.weather.reSwing.Fonts;
+import com.hyz.weather.reSwing.HJPanel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * 后八个小时天气预报
  * */
-public class HourlyPanel extends JPanel {
+public class HourlyPanel extends HJPanel {
     private HourlyNodePanel[] node;
     public HourlyPanel(){
         super();
@@ -22,7 +23,7 @@ public class HourlyPanel extends JPanel {
         tb.setTitleFont(Fonts.MSYH_PLAIN_18);
         tb.setTitleJustification(TitledBorder.LEFT);
         this.setBorder(tb);
-        this.setLayout(new BorderLayout());
+        this.setLayout(new FlowLayout());
         node=new HourlyNodePanel[]{
                 new HourlyNodePanel(),
                 new HourlyNodePanel(),
@@ -33,22 +34,24 @@ public class HourlyPanel extends JPanel {
                 new HourlyNodePanel(),
                 new HourlyNodePanel()
         };
-        JPanel eightPanel=new JPanel();
-        eightPanel.setLayout(new FlowLayout());
         for (int i=0;i<8;i++){
-            eightPanel.add(node[i]);
+            this.add(node[i]);
         }
-        this.add(eightPanel,BorderLayout.SOUTH);
     }
     public boolean setData(HeWeather6Hourly heWeather6Hourly){
-        SimpleDateFormat HH = new SimpleDateFormat("HH");
-        List<Hourly> hourlyList = heWeather6Hourly.getHourly();
+        return setData(heWeather6Hourly.getHourly());
+    }
+
+    public boolean setData(List<Hourly> hourlyList) {
+        SimpleDateFormat after = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        SimpleDateFormat before = new SimpleDateFormat("dd.HH");
         for (int i=0;i<8;i++){
             Hourly hourly = hourlyList.get(i);
             try {
-                node[i].getTime().setText(HH.format(HH.parse(hourly.getTime())));
+                node[i].getTime().setText(before.format(after.parse(hourly.getTime())));
             } catch (ParseException e) {
                 e.printStackTrace();
+                return false;
             }
             node[i].getTmp().setText(hourly.getTmp()+"℃");
             node[i].getCond().setText(hourly.getCond_txt());

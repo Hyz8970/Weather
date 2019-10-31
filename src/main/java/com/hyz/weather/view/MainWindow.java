@@ -1,11 +1,17 @@
 package com.hyz.weather.view;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.hyz.weather.action.HistoryAction;
 import com.hyz.weather.action.IpLocation;
 import com.hyz.weather.action.Wallpaper;
 import com.hyz.weather.action.Weather;
-import com.hyz.weather.entity.root.HeWeather6Now;
+import com.hyz.weather.entity.*;
+import com.hyz.weather.entity.root.*;
+import com.hyz.weather.reSwing.HJButton;
 import com.hyz.weather.reSwing.HJLabel;
 import com.hyz.weather.reSwing.Icons;
+import com.hyz.weather.reSwing.MDColor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,25 +19,32 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.SimpleFormatter;
 
 /**
  * 主窗体
  */
 public class MainWindow extends JFrame {
+    private String appTitle = "和风天气";
     private IpLocation ipLocation = new IpLocation();
     private Wallpaper wallpaper = new Wallpaper();
     private Weather weather = new Weather();
+    private HistoryAction historyAction = new HistoryAction();
     private int wWidth = 1024, wHeight = 576, tHeight = 36;
-    private String appTitle = "和风天气";
     private Point loc = null;
     private Point tmp = null;
     private boolean isDragged = false;
+    private String location = "";
+    private RegionPanel regionPanel;
     private NowPanel nowPanelP;
     private AirNowPanel airNowPanelP;
     private ForecastPanel forecastPanelP;
     private HourlyPanel hourlyPanelP;
     private LifestylePanel lifestylePanelP;
-    private String location = "beihai";
+    private LocationListPanel locationListPanel;
 
     public MainWindow() {
         //系统分辨率
@@ -52,9 +65,6 @@ public class MainWindow extends JFrame {
         wIcon.setBounds(10, tHeight / 2 - 30 / 2, 30, 30);
         HJLabel wTitle = new HJLabel(appTitle);
         wTitle.setBounds(50, 0, wWidth - 40 - Icons.CLOSE.getIconWidth(), tHeight);
-        wTitle.setForeground(Color.white);
-//        this.getLayeredPane().add(wIcon);
-//        this.getLayeredPane().add(wTitle);
         wTitle.addMouseListener(
                 new java.awt.event.MouseAdapter() {
                     public void mouseReleased(MouseEvent e) {
@@ -77,10 +87,8 @@ public class MainWindow extends JFrame {
         });
 
         //关闭按钮
-        JButton closeBt = new JButton(Icons.CLOSE);
-        closeBt.setMargin(new Insets(0, 0, 0, 0));
-        closeBt.setContentAreaFilled(false);
-        closeBt.setBorderPainted(false);
+//        JButton closeBt = new HJButton(Icons.CLOSE);
+        JButton closeBt = new HJButton(Icons.CLOSE_BLACK);
         closeBt.setBounds(wWidth - Icons.CLOSE.getIconWidth(), 0,
                 Icons.CLOSE.getIconWidth(), Icons.CLOSE.getIconHeight());
         closeBt.addActionListener((e) -> System.exit(0));
@@ -111,47 +119,118 @@ public class MainWindow extends JFrame {
                 closeBt.setContentAreaFilled(false);
             }
         });
-//        this.getLayeredPane().add(closeBt);
-//        setBackgroundImg();
-//        int cWidth = wWidth / 2 - 10;//组件宽度
-//        int osHeight = wHeight - tHeight;//单侧面板高度
+        regionPanel = new RegionPanel();
+        locationListPanel = new LocationListPanel();
         nowPanelP = new NowPanel();
         airNowPanelP = new AirNowPanel();
         hourlyPanelP = new HourlyPanel();
         forecastPanelP = new ForecastPanel();
         lifestylePanelP = new LifestylePanel();
-        flushData();
-        this.getContentPane().setLayout(new BorderLayout());
+
+        locationListPanel.setVisible(false);
+        regionPanel.getList().addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                //弹出地区选择面板
+                locationListPanel.setVisible(true);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                regionPanel.getList().setBackground(MDColor.BLUE_LIGHT);
+                regionPanel.getList().setContentAreaFilled(true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                regionPanel.getList().setContentAreaFilled(false);
+            }
+        });
+        regionPanel.getRefresh().addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                refreshData();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                regionPanel.getRefresh().setBackground(MDColor.BLUE_LIGHT);
+                regionPanel.getRefresh().setContentAreaFilled(true);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                regionPanel.getRefresh().setContentAreaFilled(false);
+            }
+        });
+        loadingData();
 
         GridBagConstraints leftGBC = new GridBagConstraints();
-        leftGBC.fill=GridBagConstraints.BOTH;
-        leftGBC.gridx=0;
+        leftGBC.fill = GridBagConstraints.BOTH;
+        leftGBC.gridx = 1;
+        leftGBC.gridy = 0;
+        leftGBC.gridwidth = 1;
+        leftGBC.insets = new Insets(20, 10, 0, 0);
         //左面板
         JPanel leftPanel = new JPanel();
+        leftPanel.setBounds(new Rectangle(0, tHeight, wWidth / 2, wHeight));
         leftPanel.setOpaque(false);
         leftPanel.setLayout(new GridBagLayout());
-        leftGBC.gridheight=2;
+        leftGBC.gridheight = 1;
+        leftPanel.add(regionPanel, leftGBC);
+        leftGBC.gridy = 1;
+        leftGBC.gridheight = 10;
         leftPanel.add(nowPanelP, leftGBC);
-        leftGBC.gridheight=1;
+        leftGBC.gridy = 11;//间隔2格
+        leftGBC.gridheight = 1;
         leftPanel.add(airNowPanelP, leftGBC);
+        leftGBC.gridy = 13;
+        leftGBC.gridheight = 5;
         leftPanel.add(hourlyPanelP, leftGBC);
         //右面板
         GridBagConstraints rightGBC = new GridBagConstraints();
-        rightGBC.fill=GridBagConstraints.EAST;
+        rightGBC.fill = GridBagConstraints.BOTH;
+        rightGBC.gridx = 0;
+        rightGBC.gridy = 0;
+        rightGBC.gridwidth = 1;
+        rightGBC.insets = new Insets(10, 10, 0, 0);
         JPanel rightPanel = new JPanel();
         rightPanel.setOpaque(false);
         rightPanel.setLayout(new GridBagLayout());
-        rightGBC.gridheight=1;
+        rightGBC.gridheight = 4;
         rightPanel.add(forecastPanelP, rightGBC);
-        rightGBC.gridheight=4;
+        rightGBC.gridy = 4;
+        rightGBC.gridheight = 15;
         rightPanel.add(lifestylePanelP, rightGBC);
 
-        this.getContentPane().add(leftPanel, BorderLayout.WEST);
-        this.getContentPane().add(rightPanel, BorderLayout.EAST);
         this.getLayeredPane().add(wIcon);
         this.getLayeredPane().add(wTitle);
         this.getLayeredPane().add(closeBt);
-        setBackgroundImg();
+//        setBackgroundImg();
+        this.getContentPane().setLayout(new BorderLayout());
+        this.getContentPane().add(leftPanel, BorderLayout.WEST);
+        this.getContentPane().add(locationListPanel, BorderLayout.CENTER);
+        this.getContentPane().add(rightPanel, BorderLayout.EAST);
     }
 
     private void setBackgroundImg() {
@@ -179,7 +258,34 @@ public class MainWindow extends JFrame {
         return this;
     }
 
-    private void flushData() {
+    private void loadingData() {
+        Gson gson = new Gson();
+        History history = historyAction.getHistory();
+        if (history != null) {
+            location = history.getCid();
+            regionPanel.setData(history.getName());
+            try {
+                nowPanelP.setData((Now) gson.fromJson(history.getNow(), new TypeToken<Now>() {
+                }.getType()));
+                airNowPanelP.setData((Air_now_city) gson.fromJson(history.getAirNow(), new TypeToken<Air_now_city>() {
+                }.getType()));
+                forecastPanelP.setData((List<Daily_forecast>) gson.fromJson(history.getForecast(), new TypeToken<List<Daily_forecast>>() {
+                }.getType()));
+                hourlyPanelP.setData((List<Hourly>) gson.fromJson(history.getHourly(), new TypeToken<List<Hourly>>() {
+                }.getType()));
+                lifestylePanelP.setData((List<Lifestyle>) gson.fromJson(history.getLifestyle(), new TypeToken<List<Lifestyle>>() {
+                }.getType()));
+            } catch (Exception e) {
+                //解析炸了
+                refreshData();
+            }
+        } else {
+            refreshData();
+        }
+    }
+
+    private void refreshData() {
+        HistoryAction historyAction = new HistoryAction();
         new Thread(() -> {
             if (location.equals("")) {
                 //定位获取天气数据
@@ -187,13 +293,20 @@ public class MainWindow extends JFrame {
             }
             HeWeather6Now now = weather.now(location);
             if (now != null) {
+                regionPanel.setData(now.getBasic().getLocation());
                 nowPanelP.setData(now);
                 location = now.getBasic().getCid();
-                airNowPanelP.setData(weather.airNow(location));
-                forecastPanelP.setData(weather.forecast(location));
-                hourlyPanelP.setData(weather.hourly(location));
-                lifestylePanelP.setData(weather.lifestyle(location));
+                Air_now_city air_now_city = weather.airNow(location).getAir_now_city();
+                airNowPanelP.setData(air_now_city);
+                List<Daily_forecast> daily_forecast = weather.forecast(location).getDaily_forecast();
+                forecastPanelP.setData(daily_forecast);
+                List<Hourly> hourly = weather.hourly(location).getHourly();
+                hourlyPanelP.setData(hourly);
+                List<Lifestyle> lifestyle = weather.lifestyle(location).getLifestyle();
+                lifestylePanelP.setData(lifestyle);
+                historyAction.updateCurrent(now, air_now_city, hourly, daily_forecast, lifestyle);
             }
+            repaint();
         }).start();
     }
 

@@ -2,12 +2,13 @@ package com.hyz.weather.view;
 
 import com.hyz.weather.reSwing.Fonts;
 import com.hyz.weather.reSwing.HJLabel;
+import com.hyz.weather.reSwing.HJPanel;
 import com.hyz.weather.reSwing.MDColor;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class LifestyleNodePanel extends JPanel {
+public class LifestyleNodePanel extends HJPanel {
     private HJLabel type, brf, txt;
 
     public LifestyleNodePanel() {
@@ -16,7 +17,7 @@ public class LifestyleNodePanel extends JPanel {
         brf = new HJLabel();
         txt = new HJLabel();
         type.setFont(Fonts.MSYH_PLAIN_18);
-        brf.setFont(Fonts.MSYH_PLAIN_18);
+        brf.setFont(Fonts.MSYH_BOLD_18);
         txt.setFont(Fonts.MSYH_PLAIN_14);
         this.setLayout(new BorderLayout());
         this.add(type, BorderLayout.WEST);

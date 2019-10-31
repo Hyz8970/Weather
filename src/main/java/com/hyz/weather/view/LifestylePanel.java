@@ -3,8 +3,7 @@ package com.hyz.weather.view;
 import com.hyz.weather.entity.Lifestyle;
 import com.hyz.weather.entity.root.HeWeather6Lifestyle;
 import com.hyz.weather.reSwing.Fonts;
-import com.hyz.weather.reSwing.HJLabel;
-import com.hyz.weather.reSwing.MDColor;
+import com.hyz.weather.reSwing.HJPanel;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -14,16 +13,16 @@ import java.util.List;
 /**
  * 生活指数面板
  * */
-public class LifestylePanel extends JPanel {
+public class LifestylePanel extends HJPanel {
     private LifestyleNodePanel[] node;
 
     public LifestylePanel(){
         super();
-        TitledBorder tb = BorderFactory.createTitledBorder("生活指数");
+        TitledBorder tb = BorderFactory.createTitledBorder("今日生活指数");
         tb.setTitleFont(Fonts.MSYH_PLAIN_18);
         tb.setTitleJustification(TitledBorder.LEFT);
         this.setBorder(tb);
-        this.setLayout(new BorderLayout());
+        this.setLayout(new GridBagLayout());
         node=new LifestyleNodePanel[]{
                 new LifestyleNodePanel(),
                 new LifestyleNodePanel(),
@@ -34,15 +33,16 @@ public class LifestylePanel extends JPanel {
                 new LifestyleNodePanel(),
                 new LifestyleNodePanel()
         };
-        JPanel eightPanel=new JPanel();
-        eightPanel.setLayout(new GridBagLayout());
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill=GridBagConstraints.VERTICAL;
-        constraints.gridheight=1;
+        constraints.fill=GridBagConstraints.HORIZONTAL;
+        constraints.gridx=0;
+        constraints.gridwidth=1;
+        constraints.gridheight=2;
+        constraints.insets=new Insets(4,2,0,0);
         for (int i=0;i<8;i++){
-            eightPanel.add(node[i],constraints);
+            constraints.gridy=i*2;
+            this.add(node[i],constraints);
         }
-        this.add(eightPanel,BorderLayout.SOUTH);
     }
     /**
      * 返回类型中文
@@ -54,6 +54,7 @@ public class LifestylePanel extends JPanel {
             case "drsg":result="穿衣指数：";break;
             case "flu":result="感冒指数：";break;
             case "sport":result="运动指数：";break;
+
             case "trav":result="旅游指数：";break;
             case "uv":result="紫外线指数：";break;
             case "cw":result="洗车指数：";break;
@@ -62,7 +63,10 @@ public class LifestylePanel extends JPanel {
         return result;
     }
     public boolean setData(HeWeather6Lifestyle heWeather6Lifestyle){
-        List<Lifestyle> lifestyleList = heWeather6Lifestyle.getLifestyle();
+        return setData(heWeather6Lifestyle.getLifestyle());
+    }
+
+    public boolean setData(List<Lifestyle> lifestyleList) {
         for (int i=0;i<8;i++){
             Lifestyle lifestyle = lifestyleList.get(i);
             node[i].getType().setText(selectType(lifestyle.getType()));

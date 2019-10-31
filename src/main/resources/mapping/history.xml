@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hyz.weather.entity.mapping">
+    <!--#{参数} 自动加单引号-->
+    <!-- 历史记录 -->
+    <select id="historyList" resultType="com.hyz.weather.entity.History">
+        select `id`,`cid`,`name`,`isUse` from history
+    </select>
+    <!--查单个-->
+    <select id="historyByCid" resultType="com.hyz.weather.entity.History"
+            parameterType="java.lang.String">
+        select * from history where cid=#{cid}
+    </select>
+    <!--查最后上次-->
+    <select id="historyIsUse" resultType="com.hyz.weather.entity.History">
+        select * from history where isUse=1
+    </select>
+    <!--插新的-->
+    <insert id="historyInsert" parameterType="com.hyz.weather.entity.History">
+        insert into history(`cid`,`name`,`isUse`,`now`,`airNow`,`hourly`,`forecast`,`lifestyle`)
+            value (#{cid},#{name},#{isUser},#{now},#{airNow},#{hourly},#{forecast},#{lifestyle})
+    </insert>
+    <!--  修改  -->
+    <update id="historyUpdate" parameterType="com.hyz.weather.entity.History">
+        update history set
+            isUse=#{isUser}
+            now=#{now}
+            airNow=#{airNow}
+            hourly=#{hourly}
+            forecast=#{forecast}
+            lifestyle=#{lifestyle}
+        where id = #{id}
+    </update>
+    <!--删除-->
+    <delete id="historyDel" parameterType="java.lang.Integer">
+        delete from history where id = #{id}
+    </delete>
+</mapper>

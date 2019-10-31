@@ -1,11 +1,14 @@
 package com.hyz.weather.service;
 
 import com.google.gson.Gson;
+import com.hyz.weather.dao.RegionDao;
+import com.hyz.weather.entity.Region;
 import com.hyz.weather.entity.root.*;
 import com.hyz.weather.utils.NetTool;
 
 
 public class HeWeatherApi {
+    private RegionDao regionDao=new RegionDao();
     private NetTool netTool=new NetTool();
     private Gson gson=new Gson();
     /**
@@ -17,6 +20,12 @@ public class HeWeatherApi {
             NowRoot root = gson.fromJson(now,NowRoot.class);
             HeWeather6Now heWeather6Now = root.getHeWeather6().get(0);
             if (heWeather6Now.getStatus().equals("ok")){
+                if (!location.equals(heWeather6Now.getBasic().getCid())){
+                    Region region = new Region();
+                    region.setName(location+"%");//后缀模糊查询
+                    region.setCid(heWeather6Now.getBasic().getCid());
+                    regionDao.updateCid(region);
+                }
                 return heWeather6Now;
             }
         }
