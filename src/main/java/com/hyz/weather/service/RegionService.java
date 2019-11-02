@@ -13,19 +13,9 @@ public class RegionService {
     public List<Region> provinceList(){
         return regionDao.getListByParentId(0);
     }
-    /**
-     * 市列表
-     * @param province 省ID
-     * */
-    public List<Region> cityList(int province){
-        return regionDao.getListByParentId(province);
-    }
-    /**
-     * 县列表
-     * @param city 市ID
-     * */
-    public List<Region> countyList(int city){
-        return regionDao.getListByParentId(city);
+    /*下级地区列表*/
+    public List<Region> nextRegionList(int lastId) {
+        return regionDao.getListByParentId(lastId);
     }
 
     /**

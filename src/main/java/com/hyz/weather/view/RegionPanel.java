@@ -1,7 +1,5 @@
 package com.hyz.weather.view;
 
-import com.hyz.weather.action.RegionAction;
-import com.hyz.weather.entity.Region;
 import com.hyz.weather.reSwing.HJButton;
 import com.hyz.weather.reSwing.HJLabel;
 import com.hyz.weather.reSwing.HJPanel;
@@ -9,7 +7,6 @@ import com.hyz.weather.reSwing.Icons;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class RegionPanel extends HJPanel {
     private HJLabel location;

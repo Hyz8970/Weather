@@ -56,7 +56,7 @@ public class MainWindow extends JFrame {
         this.setIconImage(Icons.LOGO.getImage());
 
         //标题栏
-        JLabel wIcon = new JLabel(new ImageIcon(
+        HJLabel wIcon = new HJLabel(new ImageIcon(
                 Icons.LOGO.getImage().getScaledInstance(30, 30, Image.SCALE_FAST)
         ));
         wIcon.setBounds(10, tHeight / 2 - 30 / 2, 30, 30);
@@ -85,7 +85,7 @@ public class MainWindow extends JFrame {
 
         //关闭按钮
 //        JButton closeBt = new HJButton(Icons.CLOSE);
-        JButton closeBt = new HJButton(Icons.CLOSE_BLACK);
+        HJButton closeBt = new HJButton(Icons.CLOSE_BLACK);
         closeBt.setBounds(wWidth - Icons.CLOSE.getIconWidth(), 0,
                 Icons.CLOSE.getIconWidth(), Icons.CLOSE.getIconHeight());
         closeBt.addActionListener((e) -> System.exit(0));
@@ -125,6 +125,11 @@ public class MainWindow extends JFrame {
         lifestylePanelP = new LifestylePanel();
 
         locationListPanel.setVisible(false);
+        locationListPanel.getClose().addActionListener((e)-> {
+            //获取选中地区并刷新数据
+            location=locationListPanel.getSelectResult();
+            this.refreshData();
+        });
         regionPanel.getList().addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -210,7 +215,7 @@ public class MainWindow extends JFrame {
         rightGBC.gridx = 0;
         rightGBC.gridy = 0;
         rightGBC.gridwidth = 1;
-        rightGBC.insets = new Insets(10, 10, 0, 0);
+        rightGBC.insets = new Insets(10, 10, 0, 10);
         JPanel rightPanel = new JPanel();
         rightPanel.setOpaque(false);
         rightPanel.setLayout(new GridBagLayout());
@@ -224,31 +229,33 @@ public class MainWindow extends JFrame {
         this.getLayeredPane().add(wTitle);
         this.getLayeredPane().add(closeBt);
 //        setBackgroundImg();
+        locationListPanel.setBounds(0,0,wWidth/4,leftPanel.getHeight());
+        this.getLayeredPane().add(locationListPanel, JLayeredPane.MODAL_LAYER);
+
         this.getContentPane().setLayout(new BorderLayout());
         this.getContentPane().add(leftPanel, BorderLayout.WEST);
-        this.getContentPane().add(locationListPanel, BorderLayout.CENTER);
         this.getContentPane().add(rightPanel, BorderLayout.EAST);
     }
 
     private void setBackgroundImg() {
-        JLabel bg = new JLabel(new ImageIcon(
+        HJLabel bg = new HJLabel(new ImageIcon(
                 Icons.BACKGROUND.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
         ));
-        this.getLayeredPane().add(bg, JLayeredPane.DEFAULT_LAYER);
+        this.getLayeredPane().add(bg);
         bg.setBounds(new Rectangle(0, 0, wWidth, wHeight));
-        new Thread(() -> {
-            //加载bing壁纸
-            String uri = wallpaper.bingWallpaper();
-            try {
-                ImageIcon bing = new ImageIcon(new URL(uri));
-                bg.setIcon(new ImageIcon(
-                        bing.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
-                ));
-                repaint();//刷新重绘
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }).start();
+//        new Thread(() -> {
+//            //加载bing壁纸
+//            String uri = wallpaper.bingWallpaper();
+//            try {
+//                ImageIcon bing = new ImageIcon(new URL(uri));
+//                bg.setIcon(new ImageIcon(
+//                        bing.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
+//                ));
+//                repaint();//刷新重绘
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            }
+//        }).start();
     }
 
     private JFrame getSelf() {
@@ -291,14 +298,18 @@ public class MainWindow extends JFrame {
                 regionPanel.setData(now.getBasic().getLocation());
                 nowPanelP.setData(now);
                 location = now.getBasic().getCid();
-                Air_now_city air_now_city = weather.airNow(location).getAir_now_city();
-                airNowPanelP.setData(air_now_city);
                 List<Daily_forecast> daily_forecast = weather.forecast(location).getDaily_forecast();
                 forecastPanelP.setData(daily_forecast);
                 List<Hourly> hourly = weather.hourly(location).getHourly();
                 hourlyPanelP.setData(hourly);
                 List<Lifestyle> lifestyle = weather.lifestyle(location).getLifestyle();
                 lifestylePanelP.setData(lifestyle);
+
+                HeWeather6AirNow airNow = weather.airNow(location);
+                //出现请求权限问题，区级不可用？
+                Air_now_city air_now_city = airNow.getAir_now_city();
+                airNowPanelP.setData(air_now_city);
+
                 historyAction.updateCurrent(now, air_now_city, hourly, daily_forecast, lifestyle);
             }
             repaint();

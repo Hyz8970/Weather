@@ -11,10 +11,8 @@ public class RegionAction {
     public List<Region> provinceList(){
         return regionService.provinceList();
     }
-    public List<Region> cityList(int province){
-        return regionService.cityList(province);
-    }
-    public List<Region> countyList(int city){
-        return regionService.countyList(city);
+
+    public List<Region> nextRegionList(int lastId){
+        return regionService.nextRegionList(lastId);
     }
 }

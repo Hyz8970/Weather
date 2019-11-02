@@ -18,18 +18,19 @@ public class HistoryDao extends CommonDao {
     public boolean updateCurrent(History history) {
         try (SqlSession sqlSession = getSessionFactory().openSession()) {
             History result = sqlSession.selectOne(getMapping() + "historyByCid", history.getCid());
+            //其他isUse置为0
+            sqlSession.update(getMapping() + "historySetOtherUseZero", history.getCid());
+            int status;
             if (result != null) {
                 history.setId(result.getId());
                 //存在即更新
-                int update = sqlSession.update(getMapping() + "historyUpdate", history);
-                sqlSession.commit();
-                return update == 1;
+                status = sqlSession.update(getMapping() + "historyUpdate", history);
             } else {
                 //不存在即插入
-                int insert = sqlSession.insert(getMapping() + "historyInsert", history);
-                sqlSession.commit();
-                return insert == 1;
+                status = sqlSession.insert(getMapping() + "historyInsert", history);
             }
+            sqlSession.commit();
+            return status == 1;
         }
     }
 

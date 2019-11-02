@@ -32,8 +32,12 @@ public class AirNowPanel extends HJPanel {
     }
 
     public boolean setData(Air_now_city airNowCity) {
-        qlty.setText("空气质量："+airNowCity.getQlty());
-        pm25.setText("PM2.5："+airNowCity.getPm25());
-        return true;
+        //出现某些null
+        if (airNowCity!=null){
+            qlty.setText("空气质量："+airNowCity.getQlty());
+            pm25.setText("PM2.5："+airNowCity.getPm25());
+            return true;
+        }
+        return false;
     }
 }
