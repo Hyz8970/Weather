@@ -29,4 +29,8 @@ public class HistoryAction {
                                  List<Daily_forecast> daily_forecast, List<Lifestyle> lifestyle){
         return historyService.updateCurrent(now,air_now_city,hourly, daily_forecast, lifestyle);
     }
+
+    public boolean delHistory(String cid) {
+        return historyService.delHistory(cid);
+    }
 }

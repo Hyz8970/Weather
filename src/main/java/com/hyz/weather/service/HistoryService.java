@@ -33,4 +33,8 @@ public class HistoryService {
         history.setLifestyle(gson.toJson(lifestyle));
         return historyDao.updateCurrent(history);
     }
+
+    public boolean delHistory(String cid) {
+        return historyDao.delHistory(cid);
+    }
 }

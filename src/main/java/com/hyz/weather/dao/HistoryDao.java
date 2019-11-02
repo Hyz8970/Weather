@@ -39,4 +39,12 @@ public class HistoryDao extends CommonDao {
             return sqlSession.selectOne(getMapping() + "historyIsUse");
         }
     }
+
+    public boolean delHistory(String cid) {
+        try (SqlSession sqlSession = getSessionFactory().openSession()) {
+            int delete = sqlSession.delete(getMapping() + "historyDel", cid);
+            sqlSession.commit();
+            return delete == 1;
+        }
+    }
 }

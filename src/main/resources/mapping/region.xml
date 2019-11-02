@@ -3,7 +3,7 @@
 <mapper namespace="com.hyz.weather.entity.mapping">
     <!-- 地区列表 -->
     <select id="listByParentId" parameterType="java.lang.Integer" resultType="com.hyz.weather.entity.Region">
-        select * from region as r where r.parent_id = #{parentId}
+        select * from region as r where r.parentId = #{parentId}
     </select>
     <!--  修改Cid  -->
     <update id="updateCid" parameterType="com.hyz.weather.entity.Region">

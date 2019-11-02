@@ -4,7 +4,7 @@
     <!--#{参数} 自动加单引号-->
     <!-- 全部历史记录 -->
     <select id="historyList" resultType="com.hyz.weather.entity.History">
-        select `id`,`cid`,`name`,`isUse` from history order by isUse
+        select `id`,`cid`,`name`,`isUse` from history order by isUse desc
     </select>
     <!--查单个-->
     <select id="historyByCid" resultType="com.hyz.weather.entity.History"
@@ -18,7 +18,7 @@
     <!--插新的-->
     <insert id="historyInsert" parameterType="com.hyz.weather.entity.History">
         insert into history(`cid`,`name`,`isUse`,`now`,`airNow`,`hourly`,`forecast`,`lifestyle`)
-            value (#{cid},#{name},#{isUser},#{now},#{airNow},#{hourly},#{forecast},#{lifestyle})
+            value (#{cid},#{name},#{isUse},#{now},#{airNow},#{hourly},#{forecast},#{lifestyle})
     </insert>
     <!--置非当前isUse为0-->
     <update id="historySetOtherUseZero" parameterType="java.lang.String">
@@ -36,7 +36,7 @@
         where id = #{id}
     </update>
     <!--删除-->
-    <delete id="historyDel" parameterType="java.lang.Integer">
-        delete from history where id = #{id}
+    <delete id="historyDel" parameterType="java.lang.String">
+        delete from history where cid = #{cid}
     </delete>
 </mapper>

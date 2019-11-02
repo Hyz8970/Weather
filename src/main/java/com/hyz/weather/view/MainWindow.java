@@ -135,6 +135,7 @@ public class MainWindow extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 //弹出地区选择面板
                 locationListPanel.setVisible(true);
+                locationListPanel.refreshHistory();
             }
 
             @Override
@@ -305,12 +306,12 @@ public class MainWindow extends JFrame {
                 List<Lifestyle> lifestyle = weather.lifestyle(location).getLifestyle();
                 lifestylePanelP.setData(lifestyle);
 
-                HeWeather6AirNow airNow = weather.airNow(location);
+//                HeWeather6AirNow airNow = weather.airNow(location);
                 //出现请求权限问题，区级不可用？
-                Air_now_city air_now_city = airNow.getAir_now_city();
-                airNowPanelP.setData(air_now_city);
+//                Air_now_city air_now_city = airNow.getAir_now_city();
+//                airNowPanelP.setData(air_now_city);
 
-                historyAction.updateCurrent(now, air_now_city, hourly, daily_forecast, lifestyle);
+                historyAction.updateCurrent(now, null, hourly, daily_forecast, lifestyle);
             }
             repaint();
         }).start();

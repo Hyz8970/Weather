@@ -9,6 +9,8 @@ import com.hyz.weather.reSwing.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class LocationListPanel extends HJPanel {
@@ -68,7 +70,7 @@ public class LocationListPanel extends HJPanel {
                 JList source = (JList) event.getSource();
                 int selectedIndex = source.getSelectedIndex();
                 //还是会相应两次，第二次index变-1。(￣_￣|||)
-                if (selectedIndex<0){
+                if (selectedIndex < 0) {
                     return;
                 }
                 if (!regionNameArray[selectedIndex].equals("上一级")) {
@@ -89,7 +91,6 @@ public class LocationListPanel extends HJPanel {
                         close.doClick();//模拟点击以触发MainWindow的监听
                     }
                 } else {
-                    System.out.println(regionList.get(selectedIndex).getName());
                     //选中上一级
                     selectRegionListen(regionList.get(selectedIndex), true);
                 }
@@ -108,15 +109,16 @@ public class LocationListPanel extends HJPanel {
      * @param upDown 向下还是向上
      */
     public boolean selectRegionListen(Region region, boolean upDown) {
-        if (region.getLevel() == 3) {
+        if (region.getLevel() == 3 && !upDown) {
             return true;
         } else {
             //上一级
             if (upDown) {
                 regionList = regionAction.nextRegionList(region.getParentId());
+                regionList = regionAction.nextRegionList(regionList.get(0).getParentId());
                 int size = regionList.size();
                 regionNameArray = new String[size];
-                if (regionList.get(0).getParentId() == 0) {
+                if (regionList.get(0).getLevel() == 1) {
                     //省级
                     for (int i = 0; i < size; i++) {
                         regionNameArray[i] = regionList.get(i).getName();
@@ -151,31 +153,44 @@ public class LocationListPanel extends HJPanel {
     public HJButton getClose() {
         return close;
     }
+
     /**
      * 刷新历史记录列表
-     * */
-    public boolean refreshHistory(){
+     */
+    public boolean refreshHistory() {
         GridBagConstraints historyGBC = new GridBagConstraints();
-        historyGBC.fill = GridBagConstraints.HORIZONTAL;
+        historyGBC.fill = GridBagConstraints.BOTH;
         historyGBC.gridx = 0;
         historyGBC.gridy = 0;
         historyGBC.gridwidth = 1;
         historyGBC.gridheight = 1;
         List<History> historyList = historyAction.getHistoryList();
         int historySize = historyList.size();
+        historyListPanel.removeAll();
+        historyListPanel.repaint();
+        ActionListener removeListener = e -> {
+            JButton source = (JButton) e.getSource();
+            historyAction.delHistory(source.getName());
+            refreshHistory();
+        };
+        ActionListener selectListener = e -> {
+            JButton source = (JButton) e.getSource();
+            selectResult = source.getName();
+            close.doClick();
+        };
         for (int i = 0; i < historySize; i++) {
             historyGBC.gridy++;
             History history = historyList.get(i);
-            HJLabel now = new HJLabel(history.getName());
-            now.setOpaque(true);
-            now.setFont(Fonts.MSYH_PLAIN_18);
+            HistoryNodePanel historyNodePanel = new HistoryNodePanel(history.getName(),history.getCid());
             if (history.getIsUse() == 1) {
                 //当前
-                now.setBackground(MDColor.BLUE_LIGHT);
-//                now.setBounds(new Rectangle(0, 0, this.getWidth(), now.getHeight()));
+                historyNodePanel.getTag().setBackground(MDColor.BLUE_LIGHT);
             }
-            historyListPanel.add(now, historyGBC);
+            historyNodePanel.getTag().addActionListener(selectListener);
+            historyNodePanel.getClose().addActionListener(removeListener);
+            historyListPanel.add(historyNodePanel, historyGBC);
         }
+        historyListPanel.revalidate();
         return true;
     }
 }
