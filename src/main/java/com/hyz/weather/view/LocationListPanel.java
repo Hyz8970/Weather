@@ -18,11 +18,11 @@ public class LocationListPanel extends HJPanel {
     private HistoryAction historyAction;
     private HJPanel historyListPanel;
     private HJLabel historyTag, regionTag;
-    private HJButton close;
+    private HJButton close,netLocation;
     private JList<String> regionJList;
     private List<Region> regionList;
     private String[] regionNameArray;
-    private String selectResult;
+    private String selectResult,airLocation;
 
     public LocationListPanel() {
         super();
@@ -34,6 +34,9 @@ public class LocationListPanel extends HJPanel {
         historyTag.setFont(Fonts.MSYH_PLAIN_18);
         regionTag = new HJLabel("地区");
         regionTag.setFont(Fonts.MSYH_PLAIN_18);
+        netLocation=new HJButton(new ImageIcon(
+                Icons.LOCATION_BLACK.getImage().getScaledInstance(16, 16, Image.SCALE_FAST)
+        ),"");
         close = new HJButton(Icons.CLOSE_BLACK);
         close.setBounds(this.getWidth() - Icons.CLOSE.getIconWidth(), 0,
                 Icons.CLOSE.getIconWidth(), Icons.CLOSE.getIconHeight());
@@ -44,8 +47,15 @@ public class LocationListPanel extends HJPanel {
         historyListPanel.setLayout(new GridBagLayout());
         refreshHistory();
         HJPanel historyClose = new HJPanel();
+        netLocation.setBounds(0, 0,
+                Icons.LOCATION_BLACK.getIconWidth()/2, Icons.LOCATION_BLACK.getIconHeight()/2);
+        netLocation.addActionListener((e)->{
+            selectResult = netLocation.getText();
+            close.doClick();
+        });
         historyClose.setLayout(new BorderLayout());
-        historyClose.add(historyTag, BorderLayout.CENTER);
+        historyClose.add(historyTag, BorderLayout.WEST);
+        historyClose.add(netLocation,BorderLayout.CENTER);
         historyClose.add(close, BorderLayout.EAST);
         historyClose.add(historyListPanel, BorderLayout.SOUTH);
 
@@ -83,10 +93,16 @@ public class LocationListPanel extends HJPanel {
                     if (result) {
                         //选到最小单位的地区，凭以刷新天气
                         Region region = regionList.get(selectedIndex);
+                        Region parent = regionAction.getRegion(region.getParentId());
                         if (!region.getCid().equals("")) {
                             selectResult = region.getCid();
                         } else {
                             selectResult = region.getName();
+                        }
+                        if (!parent.getCid().equals("")){
+                            airLocation=parent.getCid();
+                        }else {
+                            airLocation=parent.getName();
                         }
                         close.doClick();//模拟点击以触发MainWindow的监听
                     }
@@ -114,8 +130,8 @@ public class LocationListPanel extends HJPanel {
         } else {
             //上一级
             if (upDown) {
-                regionList = regionAction.nextRegionList(region.getParentId());
-                regionList = regionAction.nextRegionList(regionList.get(0).getParentId());
+                Region parent = regionAction.getRegion(region.getParentId());
+                regionList = regionAction.nextRegionList(parent.getParentId());
                 int size = regionList.size();
                 regionNameArray = new String[size];
                 if (regionList.get(0).getLevel() == 1) {
@@ -154,16 +170,21 @@ public class LocationListPanel extends HJPanel {
         return close;
     }
 
+    public String getAirLocation() {
+        return airLocation;
+    }
+
     /**
      * 刷新历史记录列表
      */
     public boolean refreshHistory() {
         GridBagConstraints historyGBC = new GridBagConstraints();
-        historyGBC.fill = GridBagConstraints.BOTH;
+        historyGBC.fill = GridBagConstraints.VERTICAL;
         historyGBC.gridx = 0;
         historyGBC.gridy = 0;
         historyGBC.gridwidth = 1;
         historyGBC.gridheight = 1;
+        historyGBC.insets=new Insets(0,10,0,0);
         List<History> historyList = historyAction.getHistoryList();
         int historySize = historyList.size();
         historyListPanel.removeAll();
@@ -191,6 +212,10 @@ public class LocationListPanel extends HJPanel {
             historyListPanel.add(historyNodePanel, historyGBC);
         }
         historyListPanel.revalidate();
+        return true;
+    }
+    public boolean setData(String location){
+        netLocation.setText(location);
         return true;
     }
 }

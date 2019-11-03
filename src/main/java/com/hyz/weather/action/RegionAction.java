@@ -8,6 +8,10 @@ import java.util.List;
 public class RegionAction {
     private RegionService regionService=new RegionService();
 
+    public Region getRegion(int id){
+        return regionService.getRegion(id);
+    }
+
     public List<Region> provinceList(){
         return regionService.provinceList();
     }

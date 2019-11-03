@@ -23,4 +23,8 @@ public class HJLabel extends JLabel {
         this.setFont(Fonts.MSYH_PLAIN_24);
 //        this.setForeground(Color.white);
     }
+    public HJLabel(Icon icon,String text){
+        super(text,icon,JLabel.LEFT);
+        this.setFont(Fonts.MSYH_PLAIN_24);
+    }
 }

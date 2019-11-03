@@ -16,4 +16,10 @@ public class HJButton extends JButton {
         setContentAreaFilled(false);
         setBorderPainted(false);
     }
+    public HJButton(Icon icon,String text){
+        super(text,icon);
+        setMargin(new Insets(0,0,0,0));
+        setContentAreaFilled(false);
+        setBorderPainted(false);
+    }
 }

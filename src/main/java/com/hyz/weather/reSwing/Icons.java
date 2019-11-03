@@ -11,4 +11,5 @@ public final class Icons {
     public static ImageIcon REFRESH_BLACK=new ImageIcon(Icons.class.getClassLoader().getResource("./img/refresh_black.png"));
     public static ImageIcon LIST=new ImageIcon(Icons.class.getClassLoader().getResource("./img/list.png"));
     public static ImageIcon LIST_BLACK=new ImageIcon(Icons.class.getClassLoader().getResource("./img/list_black.png"));
+    public static ImageIcon LOCATION_BLACK=new ImageIcon(Icons.class.getClassLoader().getResource("./img/location_black.png"));
 }

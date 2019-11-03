@@ -2,10 +2,7 @@ package com.hyz.weather.view;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.hyz.weather.action.HistoryAction;
-import com.hyz.weather.action.IpLocation;
-import com.hyz.weather.action.Wallpaper;
-import com.hyz.weather.action.Weather;
+import com.hyz.weather.action.*;
 import com.hyz.weather.entity.*;
 import com.hyz.weather.entity.root.*;
 import com.hyz.weather.reSwing.HJButton;
@@ -30,14 +27,15 @@ public class MainWindow extends JFrame {
     private Wallpaper wallpaper = new Wallpaper();
     private Weather weather = new Weather();
     private HistoryAction historyAction = new HistoryAction();
+//    private RegionAction regionAction=new RegionAction();
     private int wWidth = 1024, wHeight = 576, tHeight = 36;
     private Point loc = null;
     private Point tmp = null;
     private boolean isDragged = false;
-    private String location = "";
+    private String location = "", airLocation = "";
     private RegionPanel regionPanel;
     private NowPanel nowPanelP;
-    private AirNowPanel airNowPanelP;
+//    private AirNowPanel airNowPanelP;
     private ForecastPanel forecastPanelP;
     private HourlyPanel hourlyPanelP;
     private LifestylePanel lifestylePanelP;
@@ -119,15 +117,15 @@ public class MainWindow extends JFrame {
         regionPanel = new RegionPanel();
         locationListPanel = new LocationListPanel();
         nowPanelP = new NowPanel();
-        airNowPanelP = new AirNowPanel();
+//        airNowPanelP = new AirNowPanel();
         hourlyPanelP = new HourlyPanel();
         forecastPanelP = new ForecastPanel();
         lifestylePanelP = new LifestylePanel();
 
         locationListPanel.setVisible(false);
-        locationListPanel.getClose().addActionListener((e)-> {
+        locationListPanel.getClose().addActionListener((e) -> {
             //获取选中地区并刷新数据
-            location=locationListPanel.getSelectResult();
+            location = locationListPanel.getSelectResult();
             this.refreshData();
         });
         regionPanel.getList().addMouseListener(new MouseListener() {
@@ -204,9 +202,9 @@ public class MainWindow extends JFrame {
         leftGBC.gridy = 1;
         leftGBC.gridheight = 10;
         leftPanel.add(nowPanelP, leftGBC);
-        leftGBC.gridy = 11;//间隔2格
-        leftGBC.gridheight = 1;
-        leftPanel.add(airNowPanelP, leftGBC);
+//        leftGBC.gridy = 11;//间隔2格
+//        leftGBC.gridheight = 1;
+//        leftPanel.add(airNowPanelP, leftGBC);
         leftGBC.gridy = 13;
         leftGBC.gridheight = 5;
         leftPanel.add(hourlyPanelP, leftGBC);
@@ -230,7 +228,7 @@ public class MainWindow extends JFrame {
         this.getLayeredPane().add(wTitle);
         this.getLayeredPane().add(closeBt);
 //        setBackgroundImg();
-        locationListPanel.setBounds(0,0,wWidth/4,leftPanel.getHeight());
+        locationListPanel.setBounds(0, 0, wWidth / 4, leftPanel.getHeight());
         this.getLayeredPane().add(locationListPanel, JLayeredPane.MODAL_LAYER);
 
         this.getContentPane().setLayout(new BorderLayout());
@@ -244,19 +242,19 @@ public class MainWindow extends JFrame {
         ));
         this.getLayeredPane().add(bg);
         bg.setBounds(new Rectangle(0, 0, wWidth, wHeight));
-//        new Thread(() -> {
-//            //加载bing壁纸
-//            String uri = wallpaper.bingWallpaper();
-//            try {
-//                ImageIcon bing = new ImageIcon(new URL(uri));
-//                bg.setIcon(new ImageIcon(
-//                        bing.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
-//                ));
-//                repaint();//刷新重绘
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            }
-//        }).start();
+        new Thread(() -> {
+            //加载bing壁纸
+            String uri = wallpaper.bingWallpaper();
+            try {
+                ImageIcon bing = new ImageIcon(new URL(uri));
+                bg.setIcon(new ImageIcon(
+                        bing.getImage().getScaledInstance(wWidth, wHeight, Image.SCALE_FAST)
+                ));
+                repaint();//刷新重绘
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private JFrame getSelf() {
@@ -272,8 +270,8 @@ public class MainWindow extends JFrame {
             try {
                 nowPanelP.setData((Now) gson.fromJson(history.getNow(), new TypeToken<Now>() {
                 }.getType()));
-                airNowPanelP.setData((Air_now_city) gson.fromJson(history.getAirNow(), new TypeToken<Air_now_city>() {
-                }.getType()));
+//                airNowPanelP.setData((Air_now_city) gson.fromJson(history.getAirNow(), new TypeToken<Air_now_city>() {
+//                }.getType()));
                 forecastPanelP.setData((List<Daily_forecast>) gson.fromJson(history.getForecast(), new TypeToken<List<Daily_forecast>>() {
                 }.getType()));
                 hourlyPanelP.setData((List<Hourly>) gson.fromJson(history.getHourly(), new TypeToken<List<Hourly>>() {
@@ -290,24 +288,25 @@ public class MainWindow extends JFrame {
     private void refreshData() {
         HistoryAction historyAction = new HistoryAction();
         new Thread(() -> {
-            if (location.equals("")) {
-                //定位获取天气数据
-                location = ipLocation.locationByIP();
+            //获取ip定位
+            String netLocation = ipLocation.locationByIP();
+            locationListPanel.setData(netLocation);
+            if (this.location.equals("")) {
+                this.location = netLocation;
             }
-            HeWeather6Now now = weather.now(location);
+            HeWeather6Now now = weather.now(this.location);
             if (now != null) {
                 regionPanel.setData(now.getBasic().getLocation());
                 nowPanelP.setData(now);
-                location = now.getBasic().getCid();
-                List<Daily_forecast> daily_forecast = weather.forecast(location).getDaily_forecast();
+                this.location = now.getBasic().getCid();
+                List<Daily_forecast> daily_forecast = weather.forecast(this.location).getDaily_forecast();
                 forecastPanelP.setData(daily_forecast);
-                List<Hourly> hourly = weather.hourly(location).getHourly();
+                List<Hourly> hourly = weather.hourly(this.location).getHourly();
                 hourlyPanelP.setData(hourly);
-                List<Lifestyle> lifestyle = weather.lifestyle(location).getLifestyle();
+                List<Lifestyle> lifestyle = weather.lifestyle(this.location).getLifestyle();
                 lifestylePanelP.setData(lifestyle);
 
 //                HeWeather6AirNow airNow = weather.airNow(location);
-                //出现请求权限问题，区级不可用？
 //                Air_now_city air_now_city = airNow.getAir_now_city();
 //                airNowPanelP.setData(air_now_city);
 

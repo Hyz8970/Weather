@@ -1,9 +1,6 @@
 package com.hyz.weather.view;
 
-import com.hyz.weather.reSwing.Fonts;
-import com.hyz.weather.reSwing.HJButton;
-import com.hyz.weather.reSwing.HJPanel;
-import com.hyz.weather.reSwing.Icons;
+import com.hyz.weather.reSwing.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +18,7 @@ public class HistoryNodePanel extends HJPanel {
         tag.setOpaque(true);
         tag.setFont(Fonts.MSYH_PLAIN_18);
         this.setLayout(new BorderLayout());
+        this.setBorder(BorderFactory.createMatteBorder(0,0,1,0, MDColor.BLUE_DARK));
         this.add(tag,BorderLayout.WEST);
         this.add(close,BorderLayout.EAST);
     }
