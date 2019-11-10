@@ -9,17 +9,20 @@ public class HJButton extends JButton {
         setMargin(new Insets(0,0,0,0));
         setContentAreaFilled(false);
         setBorderPainted(false);
+        setFocusPainted(false);
     }
     public HJButton(String tag){
         super(tag);
         setMargin(new Insets(0,0,0,0));
         setContentAreaFilled(false);
         setBorderPainted(false);
+        setFocusPainted(false);
     }
     public HJButton(Icon icon,String text){
         super(text,icon);
         setMargin(new Insets(0,0,0,0));
         setContentAreaFilled(false);
         setBorderPainted(false);
+        setFocusPainted(false);
     }
 }
